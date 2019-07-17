@@ -10,11 +10,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Car extends Thread {
+    public static final double ANGLE_CHANGE = 0.1;
     private final Point position;
     private final Listener listenerGame;
-    private final ObjectListener objectListener;
-    private double speedY = 0;
-    private double speedX = 0;
+    private ObjectListener objectListener;
+    private double speed = 0;
+    private double angle = 0;
     private static final double ACCELERATION = 0.4;
     private boolean isPlayUser = false;
     private boolean isNeedUpdate = true;
@@ -30,7 +31,7 @@ public class Car extends Thread {
         this.position = new Point(x, y);
         setDaemon(true);
         listenerGame = listener;
-        objectListener = (ObjectListener) listenerGame.handle(this, EventType.CREATE_CAR);
+        listenerGame.handle(this, EventType.CREATE_CAR);
     }
 
     @Override
@@ -38,17 +39,18 @@ public class Car extends Thread {
         while (true) {
             if (isNeedUpdate) {
                 if (!isPlayUser) {
-                    speedUp();
+                    speedUp(YDirection.FORWARD);
                 } else {
                     isNeedUpdate = false;
                     updateSpeeds();
                 }
+                double speedY = Math.cos(angle) * speed;
+                double speedX = Math.sin(angle) * speed;
                 position.setY(position.getY() + speedY);
                 position.setX(position.getX() + speedX);
                 objectListener.handle(this, ObjectEventType.UPDATE);
             } else {
                 speedDown();
-                speedXDown();
             }
             try {
                 sleep(100);
@@ -60,54 +62,49 @@ public class Car extends Thread {
 
     public void updateSpeeds() {
         if (pressedKeys.contains(KeyCode.UP)) {
-            speedUp();
+            speedUp(YDirection.FORWARD);
         } else if (pressedKeys.contains(KeyCode.DOWN)) {
-            speedDown();
+            speedUp(YDirection.BACKWARD);
         }
         if (pressedKeys.contains(KeyCode.RIGHT)) {
-            speedXUp(XDirection.RIGHT);
+            rotate(XDirection.RIGHT);
         } else if (pressedKeys.contains(KeyCode.LEFT)) {
-            speedXUp(XDirection.LEFT);
+            rotate(XDirection.LEFT);
         }
     }
 
-    public void speedUp() {
+    public void speedUp(YDirection yDirection) {
         isNeedUpdate = true;
-        if (MAX_SPEED > speedY) {
-            speedY += ACCELERATION;
-            if (speedX > 0) {
-                speedX -= ACCELERATION / 2;
-            } else if (speedX < 0) {
-                speedX += ACCELERATION / 2;
-            }
+        if (MAX_SPEED > speed) {
+            speed += ACCELERATION * (yDirection == YDirection.BACKWARD ? -1 : 1);
         }
     }
 
-    public void speedXUp(XDirection xDirection) {
+    public void rotate(XDirection xDirection) {
         if (xDirection == XDirection.LEFT) {
-            speedX -= ACCELERATION;
+            angle -= ANGLE_CHANGE;
         } else {
-            speedX += ACCELERATION;
-        }
-    }
-
-    public void speedXDown() {
-        if (speedX > 0) {
-            speedX -= ACCELERATION;
-        } else if (speedX < 0) {
-            speedX += ACCELERATION;
+            angle += ANGLE_CHANGE;
         }
     }
 
     public void speedDown() {
         isNeedUpdate = true;
-        if (speedY > 0) {
-            speedY -= ACCELERATION;
+        if (speed > 0) {
+            speed -= ACCELERATION;
         }
     }
 
     public Point getPosition() {
         return position;
+    }
+
+    public void setObjectListener(ObjectListener objectListener) {
+        this.objectListener = objectListener;
+    }
+
+    public double getAngle() {
+        return (angle * 180) / Math.PI;
     }
 
     public void addKey(KeyCode keyCode) {

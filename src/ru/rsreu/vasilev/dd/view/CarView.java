@@ -5,10 +5,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import ru.rsreu.vasilev.dd.model.Car;
 
-public class ObjectView extends Rectangle implements ObjectListener {
+public class CarView extends Rectangle implements ObjectListener {
     private final Pane root;
 
-    public ObjectView(Pane root) {
+    public CarView(Pane root) {
         this.root = root;
         setWidth(10);
         setHeight(20);
@@ -24,6 +24,7 @@ public class ObjectView extends Rectangle implements ObjectListener {
                 Platform.runLater(() -> {
                     setTranslateX(car.getPosition().getX());
                     setTranslateY(root.getHeight() - car.getPosition().getY());
+                    setRotate(car.getAngle());
                 });
             }
         }

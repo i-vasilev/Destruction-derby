@@ -20,18 +20,19 @@ public class View implements Listener {
     }
 
     @Override
-    public Object handle(Object object, EventType type) {
+    public void handle(Object object, EventType type) {
         if (type == EventType.CREATE_CAR) {
-            root.setOnKeyPressed(a -> ((Car) object).addKey(a.getCode()));
-            root.setOnKeyReleased(a -> ((Car) object).removeKey(a.getCode()));
-            return createCarView((Car) object);
+            Car car = (Car) object;
+            root.setOnKeyPressed(a -> car.addKey(a.getCode()));
+            root.setOnKeyReleased(a -> car.removeKey(a.getCode()));
+            car.setObjectListener(createCarView());
         }
-        return null;
+        return;
     }
 
-    public ObjectListener createCarView(Car car) {
-        ObjectView objectView = new ObjectView(root);
-        rectangles.add(objectView);
-        return objectView;
+    public ObjectListener createCarView() {
+        CarView carView = new CarView(root);
+        rectangles.add(carView);
+        return carView;
     }
 }

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Model {
-    private final List<Listener> listenerList;
     private final List<Car> cars;
     private final int offsetX = 50;
     private final int startPositionY = 100;
@@ -15,7 +14,6 @@ public class Model {
     private Listener gameListener;
 
     public Model() {
-        listenerList = new ArrayList<>();
         cars = new ArrayList<>();
     }
 
