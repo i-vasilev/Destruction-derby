@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.shape.Rectangle?>
+
+<GridPane alignment="CENTER" hgap="1.0" prefHeight="99.0" prefWidth="163.0" vgap="1.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.rsreu.vasilev.dd.controller.Controller">
+   <columnConstraints>
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+      <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+      <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+      <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="200.0" stroke="BLACK" strokeLineCap="ROUND" strokeLineJoin="BEVEL" strokeMiterLimit="100.0" strokeType="INSIDE" strokeWidth="0.0" width="70.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+      <Rectangle arcHeight="6.0" arcWidth="5.0" fill="#1fff52" height="200.0" rotate="90.0" stroke="BLACK" strokeType="INSIDE" width="39.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+   </children>
+</GridPane>
