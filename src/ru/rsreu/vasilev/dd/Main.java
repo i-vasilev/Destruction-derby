@@ -18,8 +18,9 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, 400, 600));
         primaryStage.show();
         Model model = new Model();
+        root.requestFocus();
         Controller controller = new Controller(model);
-        View view = new View(controller);
+        View view = new View(controller, root);
         view.initialize();
         model.start();
     }

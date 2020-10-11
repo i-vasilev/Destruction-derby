@@ -13,7 +13,7 @@ public class Model {
         listenerList = new ArrayList<>();
         cars = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            final Car car = new Car(100, i * 100);
+            final Car car = new Car(i * 50, 100);
             cars.add(car);
         }
     }
