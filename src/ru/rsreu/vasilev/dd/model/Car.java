@@ -2,13 +2,22 @@ package ru.rsreu.vasilev.dd.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import ru.rsreu.vasilev.dd.view.Listener;
 
 public class Car extends Thread {
     private Point position;
     private List<Listener> listenerList;
+    private double speedY = 0;
+    private double speedX = 0;
+    private double acceleration = 0.05;
+    private boolean isPlayUser = false;
+    private boolean isNeedUpdate = true;
+
+    public Car(int x, int y, boolean isPlayUser) {
+        this(x, y);
+        this.isPlayUser = isPlayUser;
+    }
 
     public Car(int x, int y) {
         this.position = new Point(x, y);
@@ -22,18 +31,65 @@ public class Car extends Thread {
 
     @Override
     public void run() {
-        Random rnd = new Random();
-        double speed = rnd.nextDouble();
         try {
             while (true) {
-                position.setY(position.getY() + speed);
-                for (Listener listener : listenerList) {
-                    listener.showCar(this);
+                if (isNeedUpdate) {
+                    if (!isPlayUser) {
+                        speedUp();
+                    }
+                    position.setY(position.getY() + speedY);
+                    position.setX(position.getX() + speedX);
+                    for (Listener listener : listenerList) {
+                        listener.showCar(this);
+                    }
+                    isNeedUpdate = false;
+                } else {
+                    speedDown();
+                    speedXDown();
                 }
                 sleep(100);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void speedUp() {
+        isNeedUpdate = true;
+        double maxSpeed = 5;
+        if (maxSpeed > speedY) {
+            speedY += acceleration;
+            if (speedX > 0) {
+                speedX -= acceleration;
+            } else if (speedX < 0) {
+                speedX += acceleration;
+            }
+        }
+    }
+
+    public void speedXUp(Direction direction) {
+        switch (direction) {
+            case LEFT:
+                speedX -= acceleration;
+                break;
+            case RIGHT:
+                speedX += acceleration;
+                break;
+        }
+    }
+
+    public void speedXDown() {
+        if (speedX > 0) {
+            speedX -= acceleration;
+        } else if (speedX < 0) {
+            speedX += acceleration;
+        }
+    }
+
+    public void speedDown() {
+        isNeedUpdate = true;
+        if (speedY > 0) {
+            speedY -= acceleration;
         }
     }
 

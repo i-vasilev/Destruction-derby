@@ -20,6 +20,7 @@ public class Main extends Application {
         Model model = new Model();
         root.requestFocus();
         Controller controller = new Controller(model);
+        root.setOnKeyPressed(controller);
         View view = new View(controller, root);
         view.initialize();
         model.start();
