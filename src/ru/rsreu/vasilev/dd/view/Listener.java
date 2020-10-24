@@ -7,5 +7,4 @@ import ru.rsreu.vasilev.dd.model.Car;
 
 public interface Listener {
     void showCar(Car car);
-    List<Path> getEdges();
 }

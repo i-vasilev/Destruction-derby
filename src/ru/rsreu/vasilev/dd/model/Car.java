@@ -23,6 +23,7 @@ public class Car extends Thread {
         this.position = new Point(x, y);
         listenerList = new ArrayList<>();
         setDaemon(true);
+        
     }
 
     public void addListener(Listener listener) {
@@ -36,13 +37,14 @@ public class Car extends Thread {
                 if (isNeedUpdate) {
                     if (!isPlayUser) {
                         speedUp();
+                    } else {
+                        isNeedUpdate = false;
                     }
                     position.setY(position.getY() + speedY);
                     position.setX(position.getX() + speedX);
                     for (Listener listener : listenerList) {
                         listener.showCar(this);
                     }
-                    isNeedUpdate = false;
                 } else {
                     speedDown();
                     speedXDown();
@@ -68,13 +70,10 @@ public class Car extends Thread {
     }
 
     public void speedXUp(Direction direction) {
-        switch (direction) {
-            case LEFT:
-                speedX -= acceleration;
-                break;
-            case RIGHT:
-                speedX += acceleration;
-                break;
+        if (direction == Direction.LEFT) {
+            speedX -= acceleration;
+        } else {
+            speedX += acceleration;
         }
     }
 

@@ -1,11 +1,10 @@
 package ru.rsreu.vasilev.dd.controller;
 
-import javafx.event.EventHandler;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.KeyCode;
 import ru.rsreu.vasilev.dd.model.Model;
 import ru.rsreu.vasilev.dd.view.Listener;
 
-public class Controller implements EventHandler<KeyEvent> {
+public class Controller {
     private Model model;
 
     public Controller(Model model) {
@@ -16,9 +15,11 @@ public class Controller implements EventHandler<KeyEvent> {
         model.addListener(listener);
     }
 
-    @Override
-    public void handle(KeyEvent event) {
-        System.out.println(event.getCode().getChar());
-        model.movePlayer(event.getCode().getChar());
+    public void addKey(KeyCode keyCode) {
+        model.addKey(keyCode);
+    }
+
+    public void removeKey(KeyCode keyCode) {
+        model.removeKey(keyCode);
     }
 }

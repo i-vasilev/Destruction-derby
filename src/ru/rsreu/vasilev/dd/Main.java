@@ -10,18 +10,25 @@ import ru.rsreu.vasilev.dd.view.View;
 
 public class Main extends Application {
 
+    private final int widthWindow = 400;
+
+    private final int heightWindow = 600;
+
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("DD");
         Pane root = new Pane();
-        root.setPrefSize(400, 600);
-        primaryStage.setScene(new Scene(root, 400, 600));
+        root.setPrefSize(widthWindow, heightWindow);
+        primaryStage.setScene(new Scene(root, widthWindow, heightWindow));
         primaryStage.show();
-        Model model = new Model();
+        Model model =
+                new Model();//В машине происходит событие, которое обрабатывается в view - создание машины
+        model.initialize();
         root.requestFocus();
         Controller controller = new Controller(model);
-        root.setOnKeyPressed(controller);
         View view = new View(controller, root);
+        root.setOnKeyPressed(a -> controller.addKey(a.getCode()));
+        root.setOnKeyReleased(a -> controller.removeKey(a.getCode()));
         view.initialize();
         model.start();
     }
