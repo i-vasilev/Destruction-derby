@@ -1,42 +1,38 @@
 package ru.rsreu.vasilev.dd.model;
 
+import javafx.scene.input.KeyCode;
+import ru.rsreu.vasilev.dd.view.Listener;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javafx.scene.input.KeyCode;
-import ru.rsreu.vasilev.dd.view.Listener;
-
 public class Model {
     private final List<Listener> listenerList;
     private final List<Car> cars;
-    private final Car player;
     private final Set<KeyCode> pressedKeys = new HashSet<>();
     private final int offsetX = 50;
     private final int startPositionY = 100;
     private final int countCars = 5;
+    private Car player;
+    private Listener gameListener;
 
     public Model() {
         listenerList = new ArrayList<>();
         cars = new ArrayList<>();
-        player = new Car(countCars * offsetX, startPositionY, true);
     }
 
-    public void initialize() {
+    public void initialize(Listener gameListener) {
+        this.gameListener = gameListener;
         for (int i = 1; i < countCars; i++) {
-            final Car car = new Car(i * offsetX, startPositionY);
+            final Car car = new Car(i * offsetX, startPositionY, gameListener);
             cars.add(car);
         }
+        player = new Car(countCars * offsetX, startPositionY, gameListener, true);
         cars.add(player);
     }
 
-    public void addListener(Listener listener) {
-        listenerList.add(listener);
-        for (Car car : cars) {
-            car.addListener(listener);
-        }
-    }
 
     public void start() {
         for (Car car : cars) {

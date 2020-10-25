@@ -1,40 +1,36 @@
 package ru.rsreu.vasilev.dd.view;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import ru.rsreu.vasilev.dd.controller.Controller;
-import ru.rsreu.vasilev.dd.model.Car;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class View implements Listener {
     private Controller controller;
     private Pane root;
-    private ConcurrentMap<Long, Rectangle> rectangleMap;
+    private List<Rectangle> rectangles;
 
     public View(Controller controller, Pane root) {
         this.controller = controller;
         this.root = root;
-        rectangleMap = new ConcurrentHashMap<>();
+        rectangles = new ArrayList<>();
     }
-
-    public void initialize() {this.controller.addListener(this);}
 
     @Override
-    public void showCar(Car car) {
-//        Platform.runLater(() -> {
-//            rectangle.setTranslateX(car.getPosition().getX());
-//            rectangle.setTranslateY(root.getHeight() - car.getPosition().getY());
-//        });
+    public Object handle(Object object, EventType type) {
+        if (type == EventType.CREATE_CAR) {
+            return createCarView();
+        }
+        return null;
     }
 
-    public Rectangle createCarView() {
-        Rectangle rectangle = new Rectangle();
-        rectangle.setWidth(10);
-        rectangle.setHeight(20);
-        Platform.runLater(() -> root.getChildren().add(rectangle));
-        return rectangle;
+    public ObjectListener createCarView() {
+        ObjectView objectView = new ObjectView(root);
+        rectangles.add(objectView);
+        return objectView;
     }
 }

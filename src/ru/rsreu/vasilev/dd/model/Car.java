@@ -1,33 +1,30 @@
 package ru.rsreu.vasilev.dd.model;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import ru.rsreu.vasilev.dd.view.Listener;
+import ru.rsreu.vasilev.dd.view.*;
 
 public class Car extends Thread {
     private Point position;
-    private List<Listener> listenerList;
+    private Listener listenerGame;
+    private ObjectListener objectListener;
     private double speedY = 0;
     private double speedX = 0;
     private double acceleration = 0.05;
     private boolean isPlayUser = false;
     private boolean isNeedUpdate = true;
 
-    public Car(int x, int y, boolean isPlayUser) {
-        this(x, y);
+    public Car(int x, int y, Listener listener, boolean isPlayUser) {
+        this(x, y, listener);
         this.isPlayUser = isPlayUser;
     }
 
-    public Car(int x, int y) {
+    public Car(int x, int y, Listener listener) {
         this.position = new Point(x, y);
-        listenerList = new ArrayList<>();
         setDaemon(true);
-        
-    }
-
-    public void addListener(Listener listener) {
-        listenerList.add(listener);
+        listenerGame = listener;
+        objectListener = (ObjectListener) listenerGame.handle(this, EventType.CREATE_CAR);
+        listenerGame = listener;
     }
 
     @Override
@@ -42,9 +39,7 @@ public class Car extends Thread {
                     }
                     position.setY(position.getY() + speedY);
                     position.setX(position.getX() + speedX);
-                    for (Listener listener : listenerList) {
-                        listener.showCar(this);
-                    }
+                    objectListener.handle(this, ObjectEventType.UPDATE);
                 } else {
                     speedDown();
                     speedXDown();

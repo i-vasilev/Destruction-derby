@@ -11,10 +11,6 @@ public class Controller {
         this.model = model;
     }
 
-    public void addListener(Listener listener) {
-        model.addListener(listener);
-    }
-
     public void addKey(KeyCode keyCode) {
         model.addKey(keyCode);
     }

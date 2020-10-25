@@ -23,13 +23,12 @@ public class Main extends Application {
         primaryStage.show();
         Model model =
                 new Model();//В машине происходит событие, которое обрабатывается в view - создание машины
-        model.initialize();
         root.requestFocus();
         Controller controller = new Controller(model);
         View view = new View(controller, root);
         root.setOnKeyPressed(a -> controller.addKey(a.getCode()));
         root.setOnKeyReleased(a -> controller.removeKey(a.getCode()));
-        view.initialize();
+        model.initialize(view);
         model.start();
     }
 
