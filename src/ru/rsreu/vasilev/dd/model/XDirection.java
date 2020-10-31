@@ -1,5 +1,5 @@
 package ru.rsreu.vasilev.dd.model;
 
-public enum Direction {
+public enum XDirection {
     LEFT, RIGHT
 }

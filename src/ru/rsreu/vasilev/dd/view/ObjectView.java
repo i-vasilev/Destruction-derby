@@ -6,7 +6,7 @@ import javafx.scene.shape.Rectangle;
 import ru.rsreu.vasilev.dd.model.Car;
 
 public class ObjectView extends Rectangle implements ObjectListener {
-    private Pane root;
+    private final Pane root;
 
     public ObjectView(Pane root) {
         this.root = root;

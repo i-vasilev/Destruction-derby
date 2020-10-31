@@ -21,14 +21,12 @@ public class Main extends Application {
         root.setPrefSize(widthWindow, heightWindow);
         primaryStage.setScene(new Scene(root, widthWindow, heightWindow));
         primaryStage.show();
-        Model model =
-                new Model();//В машине происходит событие, которое обрабатывается в view - создание машины
+        Model model = new Model();
         root.requestFocus();
         Controller controller = new Controller(model);
         View view = new View(controller, root);
-        root.setOnKeyPressed(a -> controller.addKey(a.getCode()));
-        root.setOnKeyReleased(a -> controller.removeKey(a.getCode()));
-        model.initialize(view);
+        controller.setListener(view);
+        model.initialize();
         model.start();
     }
 
