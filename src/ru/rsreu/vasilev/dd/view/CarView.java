@@ -6,12 +6,14 @@ import javafx.scene.shape.Rectangle;
 import ru.rsreu.vasilev.dd.model.Car;
 
 public class CarView extends Rectangle implements ObjectListener {
+    public static final int CAR_WIDTH = 10;
+    public static final int CAR_HEIGHT = 20;
     private final Pane root;
 
     public CarView(Pane root) {
         this.root = root;
-        setWidth(10);
-        setHeight(20);
+        setWidth(CAR_WIDTH);
+        setHeight(CAR_HEIGHT);
         Platform.runLater(() -> root.getChildren().add(this));
     }
 
