@@ -1,135 +1,1 @@
-package ru.rsreu.vasilev.dd.model;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import javafx.scene.input.KeyCode;
-import ru.rsreu.vasilev.dd.view.EventType;
-import ru.rsreu.vasilev.dd.view.Listener;
-import ru.rsreu.vasilev.dd.view.ObjectEventType;
-import ru.rsreu.vasilev.dd.view.ObjectListener;
-import ru.rsreu.vasilev.dd.view.View;
-
-public class Car extends Thread {
-    public static final double ANGLE_CHANGE = 0.2;
-    public static final int TIME_SLEEP = 20;
-    private final Point position;
-    private final Listener listenerGame;
-    private ObjectListener objectListener;
-    private double speed = 0;
-    private double angle = 0;
-    private static final double ACCELERATION = 0.3;
-    private boolean isPlayUser = false;
-    private boolean isNeedUpdate = true;
-    private static final double MAX_SPEED = 6;
-    private final Set<KeyCode> pressedKeys = new HashSet<>();
-    private final Model modelGame;
-
-    public Car(Model modelGame, int x, int y, Listener listener, boolean isPlayUser) {
-        this(modelGame, x, y, listener);
-        this.isPlayUser = isPlayUser;
-    }
-
-    public Car(Model modelGame, int x, int y, Listener listener) {
-        this.position = new Point(x, y);
-        this.modelGame = modelGame;
-        setDaemon(true);
-        listenerGame = listener;
-        listenerGame.handle(this, EventType.CREATE_CAR);
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            if (isNeedUpdate) {
-                if (!isPlayUser) {
-                    speedUp(YDirection.FORWARD);
-                } else {
-                    isNeedUpdate = false;
-                    updateSpeeds();
-                }
-                double speedY = Math.cos(angle) * speed;
-                double speedX = Math.sin(angle) * speed;
-                moveCar(speedY, speedX);
-                objectListener.handle(this, ObjectEventType.UPDATE);
-            } else {
-                speedDown();
-            }
-            try {
-                sleep(TIME_SLEEP);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private synchronized void moveCar(double speedY, double speedX) {
-        double newY = position.getY() + speedY;
-        double newX = position.getX() + speedX;
-        if (modelGame.getHeight() > ((int)newY / View.WIDTH_SQUARE - 1) &&
-                modelGame.getHeight() > ((int)newY / View.WIDTH_SQUARE) && newY > 0 &&
-                modelGame.getWidth() > (int)newX / View.WIDTH_SQUARE && newX >= 0 &&
-                modelGame.getMap()[modelGame.getHeight() - (int)newY / View.WIDTH_SQUARE - 1][
-                        (int)newX / View.WIDTH_SQUARE]) {
-            position.setY(newY);
-            position.setX(newX);
-        }
-    }
-
-    public void updateSpeeds() {
-        if (pressedKeys.contains(KeyCode.UP)) {
-            speedUp(YDirection.FORWARD);
-        } else if (pressedKeys.contains(KeyCode.DOWN)) {
-            speedUp(YDirection.BACKWARD);
-        }
-        if (pressedKeys.contains(KeyCode.RIGHT)) {
-            rotate(XDirection.RIGHT);
-        } else if (pressedKeys.contains(KeyCode.LEFT)) {
-            rotate(XDirection.LEFT);
-        }
-    }
-
-    public void speedUp(YDirection yDirection) {
-        isNeedUpdate = true;
-        if (MAX_SPEED > speed) {
-            speed += ACCELERATION * (yDirection == YDirection.BACKWARD ? -1 : 1);
-        }
-    }
-
-    public void rotate(XDirection xDirection) {
-        if (xDirection == XDirection.LEFT) {
-            angle -= ANGLE_CHANGE;
-        } else {
-            angle += ANGLE_CHANGE;
-        }
-    }
-
-    public void speedDown() {
-        isNeedUpdate = true;
-        if (speed > 0) {
-            speed -= ACCELERATION;
-        } else if (speed < 0) {
-            speed += ACCELERATION;
-        }
-    }
-
-    public Point getPosition() {
-        return position;
-    }
-
-    public void setObjectListener(ObjectListener objectListener) {
-        this.objectListener = objectListener;
-    }
-
-    public double getAngle() {
-        return (angle * 180) / Math.PI;
-    }
-
-    public void addKey(KeyCode keyCode) {
-        pressedKeys.add(keyCode);
-    }
-
-    public void removeKey(KeyCode keyCode) {
-        pressedKeys.remove(keyCode);
-    }
-}
+package ru.rsreu.vasilev.dd.model;import java.util.HashSet;import java.util.Set;import javafx.scene.input.KeyCode;import ru.rsreu.vasilev.dd.view.EventType;import ru.rsreu.vasilev.dd.view.Listener;import ru.rsreu.vasilev.dd.view.ObjectEventType;import ru.rsreu.vasilev.dd.view.ObjectListener;import ru.rsreu.vasilev.dd.view.View;public class Car extends Thread {    public static final double ANGLE_CHANGE = 0.1;    public static final int TIME_SLEEP = 20;    private final Point position;    private final Listener listenerGame;    private ObjectListener objectListener;    private double speed = 0;    private double angle = 0;    private static final double ACCELERATION = 0.2;    private boolean isPlayUser = false;    private boolean isNeedUpdate = true;    private static final double MAX_SPEED = 6;    private final Set<KeyCode> pressedKeys = new HashSet<>();    private final Model modelGame;    public Car(Model modelGame, int x, int y, Listener listener, boolean isPlayUser) {        this(modelGame, x, y, listener);        this.isPlayUser = isPlayUser;    }    public Car(Model modelGame, int x, int y, Listener listener) {        this.position = new Point(x, y);        this.modelGame = modelGame;        setDaemon(true);        listenerGame = listener;        listenerGame.handle(this, EventType.CREATE_CAR);    }    @Override    public void run() {        while (true) {            if (isNeedUpdate) {                if (!isPlayUser) {                    checkMapAndSetKeys();                    speedUp(MovingDirection.FORWARD);                } else {                    System.out.println(angle);                    isNeedUpdate = false;                }                updateSpeeds();                double speedY = Math.cos(angle) * speed;                double speedX = Math.sin(angle) * speed;                moveCar(speedY, speedX);                objectListener.handle(this, ObjectEventType.UPDATE);            } else {                speedDown();            }            try {                sleep(TIME_SLEEP);            } catch (InterruptedException e) {                e.printStackTrace();            }        }    }    private synchronized void moveCar(double speedY, double speedX) {        double newY = position.getY() + speedY;        double newX = position.getX() + speedX;        if (modelGame.getHeight() > ((int)newY / View.WIDTH_SQUARE - 1) &&                modelGame.getHeight() > ((int)newY / View.WIDTH_SQUARE) && newY > 0 &&                modelGame.getWidth() > (int)newX / View.WIDTH_SQUARE && newX >= 0 &&                modelGame.getMap()[modelGame.getHeight() - (int)newY / View.WIDTH_SQUARE - 1][                        (int)newX / View.WIDTH_SQUARE]) {            position.setY(newY);            position.setX(newX);        }    }    public void updateSpeeds() {        if (pressedKeys.contains(KeyCode.UP)) {            speedUp(MovingDirection.FORWARD);        } else if (pressedKeys.contains(KeyCode.DOWN)) {            speedUp(MovingDirection.BACKWARD);        }        if (pressedKeys.contains(KeyCode.RIGHT)) {            rotate(Direction.RIGHT);        } else if (pressedKeys.contains(KeyCode.LEFT)) {            rotate(Direction.LEFT);        }    }    public void speedUp(MovingDirection movingDirection) {        isNeedUpdate = true;        if (MAX_SPEED > speed) {            speed += ACCELERATION * (movingDirection == MovingDirection.BACKWARD ? -1 : 1);        }    }    public void rotate(Direction direction) {        if (direction == Direction.LEFT) {            angle -= ANGLE_CHANGE;        } else {            angle += ANGLE_CHANGE;        }    }    public void speedDown() {        isNeedUpdate = true;        if (speed > 0) {            speed -= ACCELERATION;        } else if (speed < 0) {            speed += ACCELERATION;        }    }    private Direction getDirection() {        final Direction direction;        if ((int)(-angle / Math.PI / 2) == 0) {            if (angle % Math.PI <= Math.PI / 4) {                direction = Direction.UP;            } else if (angle % Math.PI > Math.PI / 4 && angle % Math.PI <= 3 * Math.PI / 4) {                direction = Direction.LEFT;            } else {                direction = Direction.DOWN;            }        } else {            if (angle % Math.PI <= Math.PI / 4) {                direction = Direction.DOWN;            } else if (angle % Math.PI > Math.PI / 4 && angle % Math.PI <= 3 * Math.PI / 4) {                direction = Direction.RIGHT;            } else {                direction = Direction.UP;            }        }        return direction;    }    private boolean isHasClearWay(Direction direction) {        int y = (int)(modelGame.getHeight() - getPosition().getY() / 100);        int x = (int)(getPosition().getX() / 100);        if (direction.equals(Direction.RIGHT)) {            x++;        } else if (direction.equals(Direction.LEFT)) {            x--;        } else if (direction.equals(Direction.DOWN)) {            y += 1;        } else {            y -= 1;        }        if (x >= 0 && x < modelGame.getWidth() && y >= 0 && y < modelGame.getHeight()) {            return modelGame.getMap()[y][x];        }        return false;    }    public void checkMapAndSetKeys() {        final Direction direction = getDirection();        final boolean upWay;        final boolean rightWay;        final boolean leftWay;        upWay = isHasClearWay(direction);        if (direction.equals(Direction.RIGHT)) {            rightWay = isHasClearWay(Direction.DOWN);            leftWay = isHasClearWay(Direction.UP);        } else if (direction.equals(Direction.UP)) {            rightWay = isHasClearWay(Direction.RIGHT);            leftWay = isHasClearWay(Direction.LEFT);        } else if (direction.equals(Direction.LEFT)) {            rightWay = isHasClearWay(Direction.UP);            leftWay = isHasClearWay(Direction.DOWN);        } else {            rightWay = isHasClearWay(Direction.LEFT);            leftWay = isHasClearWay(Direction.RIGHT);        }        //        if ((int)(modelGame.getHeight() - getPosition().getY() / 100) > 0) {        //            upWay = modelGame.getMap()[(int)(modelGame.getHeight() -        //                    getPosition().getY() / 100)][(int)(getPosition().getX() / 100)];        //        } else {        //            upWay = false;        //        }        //        final int rightIndex = (int)(getPosition().getX() / 100) + 1;        //        if (rightIndex < modelGame.getWidth()) {        //            rightWay = modelGame.getMap()[(int)(modelGame.getHeight() -        //                    getPosition().getY() / 100)][rightIndex];        //        } else {        //            rightWay = false;        //        }        //        final boolean downWay = modelGame.getMap()[(int)(getPosition().getY() / 100) + 1][(int)(        //                getPosition().getX() / 100)];        //        if ((int)(getPosition().getX() / 100) - 1 >= 0) {        //            leftWay = modelGame.getMap()[(int)(modelGame.getHeight() - getPosition().getY() / 100)][        //                    (int)(getPosition().getX() / 100) - 1];        //        } else {        //            leftWay = false;        //        }        if (!upWay) {            if (rightWay) {                addKey(KeyCode.RIGHT);            } else if (leftWay) {                addKey(KeyCode.LEFT);            }        } else {            removeKey(KeyCode.RIGHT);            removeKey(KeyCode.LEFT);        }    }    public Point getPosition() {        return position;    }    public void setObjectListener(ObjectListener objectListener) {        this.objectListener = objectListener;    }    public double getAngle() {        return (angle * 180) / Math.PI;    }    public void addKey(KeyCode keyCode) {        pressedKeys.add(keyCode);    }    public void removeKey(KeyCode keyCode) {        pressedKeys.remove(keyCode);    }}

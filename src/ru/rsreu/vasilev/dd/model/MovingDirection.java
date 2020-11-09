@@ -1,5 +1,5 @@
 package ru.rsreu.vasilev.dd.model;
 
-public enum YDirection {
+public enum MovingDirection {
     FORWARD, BACKWARD
 }
