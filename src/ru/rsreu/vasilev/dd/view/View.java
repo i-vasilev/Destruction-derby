@@ -5,6 +5,8 @@ import java.util.List;
 
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import ru.rsreu.vasilev.dd.controller.Controller;
@@ -29,31 +31,49 @@ public class View implements Listener {
     @Override
     public void handle(Object object, EventType type) {
         if (type == EventType.CREATE_CAR) {
-            Car car = (Car)object;
-            root.setOnKeyPressed(a -> car.addKey(a.getCode()));
-            root.setOnKeyReleased(a -> car.removeKey(a.getCode()));
+            Car car = (Car) object;
+            root.setOnKeyPressed(a -> controller.addKey(a.getCode()));
+            root.setOnKeyReleased(a -> controller.removeKey(a.getCode()));
             car.setObjectListener(createCarView());
         }
         if (type == EventType.INIT) {
-            Model model = (Model)object;
-            root.setPrefSize(WIDTH_WINDOW, HEIGHT_WINDOW);
-            for (int i = 0; i < model.getHeight(); i++) {
-                for (int j = 0; j < model.getWidth(); j++) {
-                    final int y = i;
-                    final int x = j;
-                    if (j != 0) {
-                        if (model.getMap()[i][j - 1] != model.getMap()[i][j]) {
-                            Platform.runLater(() -> root.getChildren()
-                                    .add(new Line(x * WIDTH_SQUARE, y * WIDTH_SQUARE,
-                                            x * WIDTH_SQUARE, (y + 1) * WIDTH_SQUARE)));
-                        }
+            initGame((Model) object);
+        }
+        if (type == EventType.WIN) {
+
+        }
+    }
+
+    private void initGame(Model model) {
+        root.setPrefSize(WIDTH_WINDOW, HEIGHT_WINDOW);
+        for (int i = 0; i < model.getHeight(); i++) {
+            for (int j = 0; j < model.getWidth(); j++) {
+                final int y = i;
+                final int x = j;
+                if (y == model.getFinalPoint().getY() && x == model.getFinalPoint().getX()) {
+                    Platform.runLater(() -> {
+                        Paint drawSquare = new Color(0, 0, 0, 0.1);
+                        final Rectangle finalRectangle = new Rectangle();
+                        finalRectangle.setX(x * WIDTH_SQUARE);
+                        finalRectangle.setY(y * WIDTH_SQUARE);
+                        finalRectangle.setHeight(WIDTH_SQUARE);
+                        finalRectangle.setWidth(WIDTH_SQUARE);
+                        finalRectangle.setFill(drawSquare);
+                        root.getChildren().add(finalRectangle);
+                    });
+                }
+                if (j != 0) {
+                    if (model.getMap()[y][x - 1] != model.getMap()[y][x]) {
+                        Platform.runLater(() -> root.getChildren()
+                                .add(new Line(x * WIDTH_SQUARE, y * WIDTH_SQUARE,
+                                        x * WIDTH_SQUARE, (y + 1) * WIDTH_SQUARE)));
                     }
-                    if (i != 0) {
-                        if (model.getMap()[i - 1][j] != model.getMap()[i][j]) {
-                            Platform.runLater(() -> root.getChildren()
-                                    .add(new Line(x * WIDTH_SQUARE, y * WIDTH_SQUARE,
-                                            (x + 1) * WIDTH_SQUARE, y * WIDTH_SQUARE)));
-                        }
+                }
+                if (i != 0) {
+                    if (model.getMap()[y - 1][x] != model.getMap()[y][x]) {
+                        Platform.runLater(() -> root.getChildren()
+                                .add(new Line(x * WIDTH_SQUARE, y * WIDTH_SQUARE,
+                                        (x + 1) * WIDTH_SQUARE, y * WIDTH_SQUARE)));
                     }
                 }
             }
