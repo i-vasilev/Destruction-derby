@@ -1,13 +1,13 @@
 package ru.rsreu.vasilev.dd.model;
 
-import javafx.scene.input.KeyCode;
-import ru.rsreu.vasilev.dd.view.EventType;
-import ru.rsreu.vasilev.dd.view.Listener;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import ru.rsreu.vasilev.dd.view.EventType;
+import ru.rsreu.vasilev.dd.view.Listener;
 
 public class Model {
     private final List<Car> cars;
@@ -18,7 +18,6 @@ public class Model {
     private Car player2;
     private Listener gameListener;
     private Point finalPoint;
-    private final Set<KeyCode> pressedKeys = new HashSet<>();
     private static final String MAP_FILENAME = "./res/map.txt";
 
     private static final int OFFSET_X = 11;
@@ -31,21 +30,10 @@ public class Model {
     }
 
     public void initialize() throws IOException {
-        HashMap<Direction, KeyCode> keys = new HashMap<>();
-        keys.put(Direction.UP, KeyCode.UP);
-        keys.put(Direction.DOWN, KeyCode.DOWN);
-        keys.put(Direction.RIGHT, KeyCode.RIGHT);
-        keys.put(Direction.LEFT, KeyCode.LEFT);
         player = new Car(this, COUNT_CARS * OFFSET_X + START_POSITION_X, START_POSITION_Y,
-                gameListener, keys);
+                gameListener);
         cars.add(player);
-        keys = new HashMap<>();
-        keys.put(Direction.UP, KeyCode.W);
-        keys.put(Direction.DOWN, KeyCode.S);
-        keys.put(Direction.RIGHT, KeyCode.D);
-        keys.put(Direction.LEFT, KeyCode.A);
-        player2 = new Car(this, OFFSET_X + START_POSITION_X, START_POSITION_Y,
-                gameListener, keys);
+        player2 = new Car(this, OFFSET_X + START_POSITION_X, START_POSITION_Y, gameListener);
         cars.add(player2);
         loadMap();
         gameListener.handle(this, EventType.INIT);
@@ -56,18 +44,21 @@ public class Model {
         try (BufferedReader reader = new BufferedReader(fileReader)) {
             String line = reader.readLine();
             if (line != null) {
-                final String[] size = line.split(" ");
+                String[] splittedLine = line.split(" ");
                 int i = 0;
                 int j;
-                height = Integer.parseInt(size[0]);
-                width = Integer.parseInt(size[1]);
+                height = Integer.parseInt(splittedLine[0]);
+                width = Integer.parseInt(splittedLine[1]);
                 map = new boolean[height][width];
                 line = reader.readLine();
-                finalPoint = new Point(Integer.parseInt(line.split(" ")[0]), Integer.parseInt(line.split(" ")[1]));
+                splittedLine = line.split(" ");
+                finalPoint = new Point(Integer.parseInt(splittedLine[0]),
+                        Integer.parseInt(splittedLine[1]));
                 line = reader.readLine();
                 while (line != null) {
                     j = 0;
-                    for (String sign : line.split(" ")) {
+                    splittedLine = line.split(" ");
+                    for (String sign : splittedLine) {
                         map[i][j] = sign.equals("1");
                         j++;
                     }
@@ -84,11 +75,11 @@ public class Model {
         }
     }
 
-    public void stopAllCars() {
+    public void stopAllCars(Car wonCar) {
         for (Car car : cars) {
             car.interrupt();
         }
-        gameListener.handle(this, EventType.WIN);
+        gameListener.handle(wonCar, EventType.WIN);
     }
 
     public void setGameListener(Listener gameListener) {
@@ -107,19 +98,15 @@ public class Model {
         return width;
     }
 
-    public void addKey(KeyCode keyCode) {
-        pressedKeys.add(keyCode);
-    }
-
-    public void removeKey(KeyCode keyCode) {
-        pressedKeys.remove(keyCode);
-    }
-
-    public Set<KeyCode> getPressedKeys() {
-        return pressedKeys;
-    }
-
     public Point getFinalPoint() {
         return finalPoint;
+    }
+
+    public Car getFirstCar() {
+        return player;
+    }
+
+    public Car getSecondCar() {
+        return player2;
     }
 }

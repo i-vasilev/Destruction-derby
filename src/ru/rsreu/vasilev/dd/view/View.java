@@ -1,14 +1,12 @@
 package ru.rsreu.vasilev.dd.view;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import ru.rsreu.vasilev.dd.controller.Controller;
 import ru.rsreu.vasilev.dd.model.Car;
 import ru.rsreu.vasilev.dd.model.Model;
@@ -20,27 +18,34 @@ public class View implements Listener {
 
     private final Controller controller;
     private final Pane root;
-    private final List<Rectangle> rectangles;
 
     public View(Controller controller, Pane root) {
         this.controller = controller;
         this.root = root;
-        rectangles = new ArrayList<>();
     }
 
     @Override
     public void handle(Object object, EventType type) {
         if (type == EventType.CREATE_CAR) {
-            Car car = (Car) object;
-            root.setOnKeyPressed(a -> controller.addKey(a.getCode()));
-            root.setOnKeyReleased(a -> controller.removeKey(a.getCode()));
-            car.setObjectListener(createCarView());
+            ((Car)object).setObjectListener(createCarView());
         }
         if (type == EventType.INIT) {
-            initGame((Model) object);
+            initGame((Model)object);
+            root.setOnKeyPressed(a -> controller.addKey(a.getCode()));
+            root.setOnKeyReleased(a -> controller.removeKey(a.getCode()));
         }
         if (type == EventType.WIN) {
-
+            Platform.runLater(() -> {
+                Paint fillRect = new Color(0.8, 0.8, 0.8, 1);
+                Rectangle rectangle = new Rectangle();
+                rectangle.setX(150);
+                rectangle.setY(200);
+                rectangle.setWidth(500);
+                rectangle.setHeight(300);
+                rectangle.setFill(fillRect);
+                root.getChildren().add(rectangle);
+                root.getChildren().add(new Text(325, 345, object.toString()));
+            });
         }
     }
 
@@ -62,27 +67,22 @@ public class View implements Listener {
                         root.getChildren().add(finalRectangle);
                     });
                 }
-                if (j != 0) {
-                    if (model.getMap()[y][x - 1] != model.getMap()[y][x]) {
-                        Platform.runLater(() -> root.getChildren()
-                                .add(new Line(x * WIDTH_SQUARE, y * WIDTH_SQUARE,
-                                        x * WIDTH_SQUARE, (y + 1) * WIDTH_SQUARE)));
-                    }
+                if (x != 0 && model.getMap()[y][x - 1] != model.getMap()[y][x]) {
+                    Platform.runLater(() -> root.getChildren()
+                            .add(new Line(x * WIDTH_SQUARE, y * WIDTH_SQUARE, x * WIDTH_SQUARE,
+                                    (y + 1) * WIDTH_SQUARE)));
                 }
-                if (i != 0) {
-                    if (model.getMap()[y - 1][x] != model.getMap()[y][x]) {
-                        Platform.runLater(() -> root.getChildren()
-                                .add(new Line(x * WIDTH_SQUARE, y * WIDTH_SQUARE,
-                                        (x + 1) * WIDTH_SQUARE, y * WIDTH_SQUARE)));
-                    }
+
+                if (y != 0 && model.getMap()[y - 1][x] != model.getMap()[y][x]) {
+                    Platform.runLater(() -> root.getChildren()
+                            .add(new Line(x * WIDTH_SQUARE, y * WIDTH_SQUARE,
+                                    (x + 1) * WIDTH_SQUARE, y * WIDTH_SQUARE)));
                 }
             }
         }
     }
 
-    public ObjectListener createCarView() {
-        CarView carView = new CarView(root);
-        rectangles.add(carView);
-        return carView;
+    private ObjectListener createCarView() {
+        return new CarView(root);
     }
 }
