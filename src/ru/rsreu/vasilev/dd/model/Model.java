@@ -25,6 +25,8 @@ public class Model {
     private static final int START_POSITION_X = 716;
     private static final int COUNT_CARS = 2;
 
+    public static final Object BLOCK = new Object();
+
     public Model() {
         cars = new ArrayList<>();
     }
@@ -67,6 +69,10 @@ public class Model {
                 }
             }
         }
+    }
+
+    public List<Car> getCars() {
+        return cars;
     }
 
     public void start() {
