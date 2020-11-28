@@ -16,7 +16,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("DD");
         Pane root = new Pane();
-        primaryStage.setScene(new Scene(root, View.WIDTH_WINDOW, View.HEIGHT_WINDOW));
+        primaryStage.setScene(new Scene(root, View.WIDTH_WINDOW, View.HEIGHT_WINDOW + View.HEIGHT_TOP_PANEL));
         primaryStage.show();
         Model model = new Model();
         root.requestFocus();

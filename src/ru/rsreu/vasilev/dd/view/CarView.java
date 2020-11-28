@@ -6,18 +6,16 @@ import javafx.scene.shape.Polygon;
 import ru.rsreu.vasilev.dd.model.Car;
 
 public class CarView extends Polygon implements ObjectListener {
-    public static final int CAR_WIDTH = 10;
-    public static final int CAR_HEIGHT = 20;
+    public static final double CAR_WIDTH = 10;
+    public static final double CAR_HEIGHT = 20;
     private final Pane root;
 
     public CarView(Pane root) {
         this.root = root;
         getPoints().addAll(0., 0.,
-                10.0, 0.,
-                10.0, 20.,
-                0., 20.);
-//        setWidth(CAR_WIDTH);
-//        setHeight(CAR_HEIGHT);
+                CAR_WIDTH, 0.,
+                CAR_WIDTH, CAR_HEIGHT,
+                0., CAR_HEIGHT);
         Platform.runLater(() -> root.getChildren().add(this));
     }
 

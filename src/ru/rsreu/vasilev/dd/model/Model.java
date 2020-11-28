@@ -1,13 +1,13 @@
 package ru.rsreu.vasilev.dd.model;
 
+import ru.rsreu.vasilev.dd.view.EventType;
+import ru.rsreu.vasilev.dd.view.Listener;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import ru.rsreu.vasilev.dd.view.EventType;
-import ru.rsreu.vasilev.dd.view.Listener;
 
 public class Model {
     private final List<Car> cars;
@@ -20,7 +20,7 @@ public class Model {
     private Point finalPoint;
     private static final String MAP_FILENAME = "./res/map.txt";
 
-    private static final int OFFSET_X = 11;
+    private static final int OFFSET_X = 30;
     private static final int START_POSITION_Y = 100;
     private static final int START_POSITION_X = 716;
     private static final int COUNT_CARS = 2;
@@ -33,9 +33,10 @@ public class Model {
 
     public void initialize() throws IOException {
         player = new Car(this, COUNT_CARS * OFFSET_X + START_POSITION_X, START_POSITION_Y,
-                gameListener);
+                gameListener, "Car 1");
         cars.add(player);
-        player2 = new Car(this, OFFSET_X + START_POSITION_X, START_POSITION_Y, gameListener);
+        player2 = new Car(this, OFFSET_X + START_POSITION_X, START_POSITION_Y, gameListener,
+                "Car 2");
         cars.add(player2);
         loadMap();
         gameListener.handle(this, EventType.INIT);
@@ -83,7 +84,7 @@ public class Model {
 
     public void stopAllCars(Car wonCar) {
         for (Car car : cars) {
-            car.interrupt();
+            car.setStopped(true);
         }
         gameListener.handle(wonCar, EventType.WIN);
     }
