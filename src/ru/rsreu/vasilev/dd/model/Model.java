@@ -18,11 +18,11 @@ public class Model {
     private Car player2;
     private Listener gameListener;
     private Point finalPoint;
+    private boolean pause;
     private static final String MAP_FILENAME = "./res/map.txt";
-
     private static final int OFFSET_X = 30;
     private static final int START_POSITION_Y = 100;
-    private static final int START_POSITION_X = 716;
+    public static final int START_POSITION_X = 700;
     private static final int COUNT_CARS = 2;
 
     public static final Object BLOCK = new Object();
@@ -32,12 +32,18 @@ public class Model {
     }
 
     public void initialize() throws IOException {
-        player = new Car(this, COUNT_CARS * OFFSET_X + START_POSITION_X, START_POSITION_Y,
-                gameListener, "Car 1");
-        cars.add(player);
-        player2 = new Car(this, OFFSET_X + START_POSITION_X, START_POSITION_Y, gameListener,
-                "Car 2");
+        player2 = new Car(this,
+                OFFSET_X + START_POSITION_X,
+                START_POSITION_Y,
+                gameListener,
+                "Car 1");
         cars.add(player2);
+        player = new Car(this,
+                COUNT_CARS * OFFSET_X + START_POSITION_X,
+                START_POSITION_Y,
+                gameListener,
+                "Car 2");
+        cars.add(player);
         loadMap();
         gameListener.handle(this, EventType.INIT);
     }
@@ -115,5 +121,20 @@ public class Model {
 
     public Car getSecondCar() {
         return player2;
+    }
+
+    public void pause() {
+        synchronized (BLOCK) {
+            if (pause) {
+                BLOCK.notifyAll();
+            } else {
+                gameListener.handle(this, EventType.PAUSE);
+            }
+            pause = !pause;
+        }
+    }
+
+    public boolean isPause() {
+        return pause;
     }
 }

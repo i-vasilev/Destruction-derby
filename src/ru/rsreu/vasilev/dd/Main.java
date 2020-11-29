@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import ru.rsreu.vasilev.dd.controller.Controller;
@@ -15,7 +16,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("DD");
-        Pane root = new Pane();
+        BorderPane root = new BorderPane();
         primaryStage.setScene(new Scene(root, View.WIDTH_WINDOW, View.HEIGHT_WINDOW + View.HEIGHT_TOP_PANEL));
         primaryStage.show();
         Model model = new Model();

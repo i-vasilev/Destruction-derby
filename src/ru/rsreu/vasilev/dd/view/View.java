@@ -1,7 +1,9 @@
 package ru.rsreu.vasilev.dd.view;
 
 import javafx.application.Platform;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
@@ -17,13 +19,35 @@ public class View implements Listener {
     public static final int HEIGHT_WINDOW = 600;
     public static final int WIDTH_SQUARE = 100;
     public static final int HEIGHT_TOP_PANEL = 100;
+    public static final int WIN_MESSAGE_WINDOW_X = 150;
+    public static final int WIN_MESSAGE_WINDOW_Y = 200;
+    public static final int WIN_MESSAGE_WINDOWS_WIDTH = 500;
+    public static final int WIN_MESSAGE_WINDOWS_HEIGHT = 300;
 
     private final Controller controller;
-    private final Pane root;
+    private final BorderPane root;
 
-    public View(Controller controller, Pane root) {
+    private final ViewPause pauseMenu;
+
+    public View(Controller controller, BorderPane root) {
         this.controller = controller;
         this.root = root;
+        // Create MenuBar
+        MenuBar menuBar = new MenuBar();
+
+        // Create menus
+        Menu gameMenu = new Menu("Game");
+
+        Menu openMenu = new Menu("Open...");
+        Menu saveMenu = new Menu("Save...");
+        Menu closeMenu = new Menu("Close");
+        closeMenu.setOnAction((actionEvent) -> System.exit(0));
+
+        gameMenu.getItems().addAll(openMenu, saveMenu, closeMenu);
+
+        menuBar.getMenus().add(gameMenu);
+        root.setTop(menuBar);
+        pauseMenu = createPauseMenu();
     }
 
     @Override
@@ -34,22 +58,26 @@ public class View implements Listener {
             root.setOnKeyReleased(a -> controller.removeKey(a.getCode()));
         }
         if (type == EventType.CREATE_CAR) {
-            ((Car) object).setObjectListener(createCarView());
+            ((Car) object).setObjectListener(createCarView((Car) object));
         }
         if (type == EventType.WIN) {
             Platform.runLater(() -> {
-                Paint fillRect = new Color(0.8, 0.8, 0.8, 1);
+                final double grayIntensity = 0.8;
+                Paint fillRect = new Color(grayIntensity, grayIntensity, grayIntensity, 1);
                 Rectangle rectangle = new Rectangle();
-                rectangle.setX(150);
-                rectangle.setY(200);
-                rectangle.setWidth(500);
-                rectangle.setHeight(300);
+                rectangle.setX(WIN_MESSAGE_WINDOW_X);
+                rectangle.setY(WIN_MESSAGE_WINDOW_Y);
+                rectangle.setWidth(WIN_MESSAGE_WINDOWS_WIDTH);
+                rectangle.setHeight(WIN_MESSAGE_WINDOWS_HEIGHT);
                 rectangle.setFill(fillRect);
                 root.getChildren().add(rectangle);
-                final Text text = new Text(325, 345, object.toString() + " is won!");
-                text.setFont(new Font(20));
+                final Text text = new Text(290, 345, object.toString() + " is won!");
+                text.setFont(new Font(40));
                 root.getChildren().add(text);
             });
+        }
+        if (type == EventType.PAUSE) {
+            pauseMenu.showMenu();
         }
     }
 
@@ -84,9 +112,15 @@ public class View implements Listener {
                 }
             }
         }
+        Platform.runLater(() -> root.getChildren()
+                .add(new Line(0, HEIGHT_TOP_PANEL, WIDTH_WINDOW, HEIGHT_TOP_PANEL)));
     }
 
-    private ObjectListener createCarView() {
-        return new CarView(root);
+    private ObjectListener createCarView(Car object) {
+        return new CarView(root, object);
+    }
+
+    private ViewPause createPauseMenu() {
+        return new ViewPause(root);
     }
 }
