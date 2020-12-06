@@ -19,12 +19,12 @@ public class Main extends Application {
         BorderPane root = new BorderPane();
         primaryStage.setScene(new Scene(root, View.WIDTH_WINDOW, View.HEIGHT_WINDOW + View.HEIGHT_TOP_PANEL));
         primaryStage.show();
-        Model model = new Model();
-        root.requestFocus();
-        Controller controller = new Controller(model);
-        View view = new View(controller, root);
-        controller.setListener(view);
         try {
+            Model model = new Model();
+            root.requestFocus();
+            Controller controller = new Controller(model);
+            View view = new View(controller, root);
+            controller.setListener(view);
             model.initialize();
             model.start();
         } catch (IOException e) {

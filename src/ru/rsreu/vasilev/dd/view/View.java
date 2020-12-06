@@ -10,6 +10,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import ru.rsreu.vasilev.dd.controller.Controller;
 import ru.rsreu.vasilev.dd.model.Car;
 import ru.rsreu.vasilev.dd.model.Model;
@@ -23,62 +24,77 @@ public class View implements Listener {
     public static final int WIN_MESSAGE_WINDOW_Y = 200;
     public static final int WIN_MESSAGE_WINDOWS_WIDTH = 500;
     public static final int WIN_MESSAGE_WINDOWS_HEIGHT = 300;
+    private static final int X_WON_MESSAGE = 290;
+    private static final int Y_WON_MESSAGE = 345;
+    private static final int FONT_SIZE = 40;
+    private static final double GRAY_INTENSITY = 0.8;
+    private static final String IS_WON_MESSAGE = " is won!";
+    private static final String MENU_NAME = "Game";
+    private static final String OPEN_GAME_MENU_OPTION = "Open...";
+    private static final String SAVE_GAME_MENU_OPTION = "Save...";
+    private static final String EXIT_GAME_MENU_OPTION = "Exit";
 
     private final Controller controller;
     private final BorderPane root;
+    private final FileChooser fileChooser = new FileChooser();
 
     private final ViewPause pauseMenu;
 
     public View(Controller controller, BorderPane root) {
         this.controller = controller;
         this.root = root;
-        // Create MenuBar
-        MenuBar menuBar = new MenuBar();
-
-        // Create menus
-        Menu gameMenu = new Menu("Game");
-
-        Menu openMenu = new Menu("Open...");
-        Menu saveMenu = new Menu("Save...");
-        Menu closeMenu = new Menu("Close");
-        closeMenu.setOnAction((actionEvent) -> System.exit(0));
-
-        gameMenu.getItems().addAll(openMenu, saveMenu, closeMenu);
-
-        menuBar.getMenus().add(gameMenu);
-        root.setTop(menuBar);
         pauseMenu = createPauseMenu();
+    }
+
+    private MenuBar createMenuBar(Controller controller, BorderPane root) {
+        MenuBar menuBar = new MenuBar();
+        Menu gameMenu = new Menu(MENU_NAME);
+        Menu openMenu = new Menu(OPEN_GAME_MENU_OPTION);
+        openMenu.setOnAction(actionEvent -> controller.openFile(fileChooser.showOpenDialog(root.getScene().getWindow())));
+        Menu saveMenu = new Menu(SAVE_GAME_MENU_OPTION);
+        saveMenu.setOnAction(actionEvent -> controller.saveFile(fileChooser.showSaveDialog(root.getScene().getWindow())));
+        Menu closeMenu = new Menu(EXIT_GAME_MENU_OPTION);
+        closeMenu.setOnAction(event -> controller.exit());
+        gameMenu.getItems().addAll(openMenu, saveMenu, closeMenu);
+        menuBar.getMenus().add(gameMenu);
+        return menuBar;
     }
 
     @Override
     public void handle(Object object, EventType type) {
         if (type == EventType.INIT) {
+            root.getChildren().clear();
             initGame((Model) object);
             root.setOnKeyPressed(a -> controller.addKey(a.getCode()));
             root.setOnKeyReleased(a -> controller.removeKey(a.getCode()));
+            MenuBar menuBar = createMenuBar(controller, root);
+            root.setTop(menuBar);
         }
         if (type == EventType.CREATE_CAR) {
             ((Car) object).setObjectListener(createCarView((Car) object));
         }
         if (type == EventType.WIN) {
-            Platform.runLater(() -> {
-                final double grayIntensity = 0.8;
-                Paint fillRect = new Color(grayIntensity, grayIntensity, grayIntensity, 1);
-                Rectangle rectangle = new Rectangle();
-                rectangle.setX(WIN_MESSAGE_WINDOW_X);
-                rectangle.setY(WIN_MESSAGE_WINDOW_Y);
-                rectangle.setWidth(WIN_MESSAGE_WINDOWS_WIDTH);
-                rectangle.setHeight(WIN_MESSAGE_WINDOWS_HEIGHT);
-                rectangle.setFill(fillRect);
-                root.getChildren().add(rectangle);
-                final Text text = new Text(290, 345, object.toString() + " is won!");
-                text.setFont(new Font(40));
-                root.getChildren().add(text);
-            });
+            winGame(object);
         }
         if (type == EventType.PAUSE) {
             pauseMenu.showMenu();
         }
+    }
+
+    private void winGame(Object object) {
+        Platform.runLater(() -> {
+            Paint fillRect = new Color(GRAY_INTENSITY, GRAY_INTENSITY, GRAY_INTENSITY, 1);
+            Rectangle rectangle = new Rectangle();
+            rectangle.setX(WIN_MESSAGE_WINDOW_X);
+            rectangle.setY(WIN_MESSAGE_WINDOW_Y);
+            rectangle.setWidth(WIN_MESSAGE_WINDOWS_WIDTH);
+            rectangle.setHeight(WIN_MESSAGE_WINDOWS_HEIGHT);
+            rectangle.setFill(fillRect);
+            root.getChildren().add(rectangle);
+            final Text text = new Text(X_WON_MESSAGE, Y_WON_MESSAGE, object.toString() + IS_WON_MESSAGE);
+            text.setFont(new Font(FONT_SIZE));
+            root.getChildren().add(text);
+        });
     }
 
     private void initGame(Model model) {

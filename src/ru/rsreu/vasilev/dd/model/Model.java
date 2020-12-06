@@ -6,46 +6,48 @@ import ru.rsreu.vasilev.dd.view.Listener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Model {
+public class Model implements Serializable {
+    private static final transient String MAP_FILENAME = "./res/map.txt";
+    private static final transient int OFFSET_X = 30;
+    private static final transient int START_POSITION_Y = 100;
+    private static final transient int COUNT_CARS = 2;
+    public static final transient int START_POSITION_X = 700;
+    public static final transient Object BLOCK = new Object();
     private final List<Car> cars;
+    private transient Listener gameListener;
     private boolean[][] map;
     private int height;
     private int width;
-    private Car player;
-    private Car player2;
-    private Listener gameListener;
+    private final Car player;
+    private final Car player2;
     private Point finalPoint;
     private boolean pause;
-    private static final String MAP_FILENAME = "./res/map.txt";
-    private static final int OFFSET_X = 30;
-    private static final int START_POSITION_Y = 100;
-    public static final int START_POSITION_X = 700;
-    private static final int COUNT_CARS = 2;
 
-    public static final Object BLOCK = new Object();
 
-    public Model() {
+    public Model() throws IOException {
         cars = new ArrayList<>();
-    }
-
-    public void initialize() throws IOException {
-        player2 = new Car(this,
-                OFFSET_X + START_POSITION_X,
-                START_POSITION_Y,
-                gameListener,
-                "Car 1");
-        cars.add(player2);
         player = new Car(this,
                 COUNT_CARS * OFFSET_X + START_POSITION_X,
                 START_POSITION_Y,
-                gameListener,
+//                gameListener,
                 "Car 2");
         cars.add(player);
+        player2 = new Car(this,
+                OFFSET_X + START_POSITION_X,
+                START_POSITION_Y,
+//                gameListener,
+                "Car 1");
+        cars.add(player2);
         loadMap();
+    }
+
+    public void initialize() {
         gameListener.handle(this, EventType.INIT);
+        cars.forEach(Car::initialize);
     }
 
     private void loadMap() throws IOException {
@@ -89,14 +91,22 @@ public class Model {
     }
 
     public void stopAllCars(Car wonCar) {
+        stopAllCars();
+        gameListener.handle(wonCar, EventType.WIN);
+    }
+
+    public void stopAllCars() {
         for (Car car : cars) {
             car.setStopped(true);
         }
-        gameListener.handle(wonCar, EventType.WIN);
     }
 
     public void setGameListener(Listener gameListener) {
         this.gameListener = gameListener;
+        for (Car car :
+                cars) {
+            car.setGameListener(gameListener);
+        }
     }
 
     public boolean[][] getMap() {

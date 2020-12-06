@@ -1,5 +1,7 @@
 package ru.rsreu.vasilev.dd.model;
 
-public enum Direction {
+import java.io.Serializable;
+
+public enum Direction implements Serializable {
     LEFT, RIGHT, UP, DOWN
 }

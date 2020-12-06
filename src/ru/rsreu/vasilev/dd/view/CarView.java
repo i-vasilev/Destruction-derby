@@ -27,18 +27,20 @@ public class CarView extends Polygon implements ObjectListener {
                 0., CAR_HEIGHT);
         final Random random = new Random();
         Paint color = new Color(random.nextDouble(), random.nextDouble(), random.nextDouble(), 1);
-        Font font = new Font(20.0);
+        Font font = new Font(30.0);
         setFill(color);
-        score = new Text();
-        score.setX((object.getPosition().getX() - Model.START_POSITION_X) * 10);
-        score.setY(25);
-        score.setFill(color);
-        score.setFont(font);
-        carName = new Text();
-        carName.setX((object.getPosition().getX() - Model.START_POSITION_X) * 10);
-        carName.setY(75);
-        carName.setFill(color);
-        carName.setFont(font);
+        carName = TextBuilder.getBuilder()
+                .setX((object.getPosition().getX() - Model.START_POSITION_X) * 10)
+                .setY(45)
+                .setFill(color)
+                .setFont(font)
+                .build();
+        score = TextBuilder.getBuilder()
+                .setX((object.getPosition().getX() - Model.START_POSITION_X) * 10)
+                .setY(85)
+                .setFill(color)
+                .setFont(font)
+                .build();
         Platform.runLater(() -> root.getChildren().add(this));
         Platform.runLater(() -> root.getChildren().add(score));
         Platform.runLater(() -> root.getChildren().add(carName));
@@ -57,6 +59,41 @@ public class CarView extends Polygon implements ObjectListener {
                     setRotate(car.getAngle());
                 });
             }
+        }
+    }
+
+    private static class TextBuilder {
+        private static Text text;
+
+        public static TextBuilder getBuilder() {
+            final TextBuilder textBuilder = new TextBuilder();
+            text = new Text();
+            return textBuilder;
+        }
+
+        public TextBuilder setX(double x) {
+            text.setX(x);
+            return this;
+        }
+
+        public TextBuilder setY(double y) {
+            text.setY(y);
+            return this;
+        }
+
+        public TextBuilder setFill(Paint paint) {
+            text.setFill(paint);
+            return this;
+        }
+
+
+        public TextBuilder setFont(Font font) {
+            text.setFont(font);
+            return this;
+        }
+
+        public Text build() {
+            return text;
         }
     }
 }
